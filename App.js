@@ -20,7 +20,7 @@ const saveData = async (key, value) => {
 };
 
 // Obtener datos
-const getData = async (key) => {
+/*const getData = async (key) => {
   try {
     const value = await AsyncStorage.getItem(key);
     if (value !== null) {
@@ -32,7 +32,7 @@ const getData = async (key) => {
   } catch (error) {
     console.log('Error al obtener datos: ', error);
   }
-};
+};*/
 
 
 export default function App() {

@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { ConfigureStore } from './redux/configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import PantallaLogin from './componentes/LoginComponent';
 
 const store = ConfigureStore();
 
@@ -36,13 +37,23 @@ const saveData = async (key, value) => {
 
 
 export default function App() {
+
+  const estaLogin = false;
+
   return (
     <Provider store={store}>
       <SafeAreaProvider>
-        <View style={styles.container}>
-          <Campobase />
-          <StatusBar style="auto" />
-        </View>
+        {
+          estaLogin ?
+
+            <View style={styles.container}>
+              <Campobase />
+              <StatusBar style="auto" />
+            </View>
+            :
+            <PantallaLogin />
+
+        }
       </SafeAreaProvider>
     </Provider>
   );

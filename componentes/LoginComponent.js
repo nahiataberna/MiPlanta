@@ -6,25 +6,32 @@ import {
     View,
     Image,
     TextInput,
-    Button,
     TouchableOpacity,
 } from "react-native";
+import { color1, color2, colorError } from "../comun/comun";
 
 const PantallaLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
 
-    const [isValid, setIsValid] = useState(true);
+    const [emailIsValid, setEmailIsValid] = useState(true);
+    const [passwordValid, setPasswordValid] = useState(true);
+    const [password2Valid, setPassword2Valid] = useState(true);
+
+    const [mensajeError, setMensajeError] = useState('');
+
 
     const [registro, setRegistro] = useState(false);
 
     const handleLogin = () => {
-        console.log(email);
-        console.log(password);
         if (password == '') {
-            console.log("no es vallido");
-            setIsValid(false);
+            setPasswordValid(false);
+            setMensajeError("Debe rellenar todos los campos");
+        }
+        if (email == '') {
+            setEmailIsValid(false);
+            setMensajeError("Debe rellenar todos los campos");
             return;
         }
         // firebase
@@ -39,11 +46,22 @@ const PantallaLogin = () => {
         //   });
     };
     const handleRegistro = () => {
-        console.log(email);
-        console.log(password);
-        console.log(password2);
         if (password == password2) {
-
+            setPassword2Valid(false);
+            setMensajeError("Las contraseñas no coinciden");
+        }
+        if (password == '') {
+            setPasswordValid(false);
+            setMensajeError("Debe rellenar todos los campos");
+        }
+        if (password == '') {
+            setPassword2Valid(false);
+            setMensajeError("Debe rellenar todos los campos");
+        }
+        if (email == '') {
+            setEmailIsValid(false);
+            setMensajeError("Debe rellenar todos los campos");
+            return;
         }
 
     };
@@ -52,7 +70,7 @@ const PantallaLogin = () => {
         <View style={styles.container}>
             <Image style={styles.image} source={require("./imagenes/logo.png")} />
             <StatusBar style="auto" />
-            <View style={styles.inputView}>
+            <View style={[styles.inputView, !emailIsValid && styles.inputInvalid]}>
                 <TextInput
                     style={styles.TextInput}
                     placeholder="Email"
@@ -61,7 +79,7 @@ const PantallaLogin = () => {
                 />
             </View>
 
-            <View style={[styles.inputView, !isValid && styles.inputInvalid]}>
+            <View style={[styles.inputView, !passwordValid && styles.inputInvalid]}>
                 <TextInput
                     style={styles.TextInput}
                     placeholder="Contraseña"
@@ -73,16 +91,20 @@ const PantallaLogin = () => {
 
             {
                 registro ?
-                    <View style={styles.inputView}>
+                    <View style={[styles.inputView, !password2Valid && styles.inputInvalid]}>
                         <TextInput
                             style={styles.TextInput}
                             placeholder="Repita contraseña"
                             placeholderTextColor="#003f5c"
                             secureTextEntry={true}
-                            onChangeText={(password2) => setPassword(password2)}
+                            onChangeText={(password2) => setPassword2(password2)}
                         />
                     </View> :
                     ""
+            }
+            {
+                mensajeError == '' ? "" :
+                    <Text style={styles.mensajeError}> {mensajeError}</Text>
             }
 
             <TouchableOpacity>
@@ -92,7 +114,6 @@ const PantallaLogin = () => {
                         :
                         <Text onPress={(registro) => setRegistro(true)} style={styles.forgot_button}>Registrarse</Text>
                 }
-
             </TouchableOpacity>
             <TouchableOpacity style={styles.loginBtn}>
                 {
@@ -116,9 +137,11 @@ const styles = StyleSheet.create({
     },
     image: {
         marginBottom: 40,
+        width: 220,
+        height: 220,
     },
     inputView: {
-        backgroundColor: "#FFC0CB",
+        backgroundColor: color2,
         borderRadius: 30,
         width: "70%",
         height: 45,
@@ -141,16 +164,22 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginTop: 40,
-        backgroundColor: "#FF1493",
+        backgroundColor: color1,
     },
     inputInvalid: {
-        backgroundColor: "red",
+        backgroundColor: colorError,
         borderRadius: 30,
         width: "70%",
         height: 45,
         marginBottom: 20,
         alignItems: "center",
+        borderWidth: 3,
         borderColor: "red",
+    },
+    mensajeError: {
+        height: 30,
+        marginBottom: 30,
+        color: colorError,
     },
 });
 

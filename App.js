@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { ConfigureStore } from './redux/configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PantallaLogin from './componentes/LoginComponent';
+import Prueba from './componentes/PruebasBBDD';
 
 const store = ConfigureStore();
 
@@ -51,7 +52,10 @@ export default function App() {
               <StatusBar style="auto" />
             </View>
             :
-            <PantallaLogin />
+            <View style={styles.container}>
+              <PantallaLogin />
+              <Prueba />
+            </View>
 
         }
       </SafeAreaProvider>

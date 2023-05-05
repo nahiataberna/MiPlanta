@@ -22,7 +22,7 @@ async function requestCameraRollPermission() {
 
 const Separator = () => <View style={styles.separator} />;
 
-function AnadirComentario() {
+function AnadirPost() {
     const [titulo, setTitulo] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [foto, setFoto] = useState(null);
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
         color: 'black',
         position: 'absolute',
         bottom: 50,
-        right: 40,
+        left: 40,
     },
     separator: {
         marginVertical: 8,
@@ -152,4 +152,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default AnadirComentario;
+export default AnadirPost;

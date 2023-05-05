@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Campobase from './componentes/CampobaseComponent';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -8,7 +8,8 @@ import { ConfigureStore } from './redux/configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PantallaLogin from './componentes/LoginComponent';
 import Prueba from './componentes/PruebasBBDD';
-import AnadirComentario from './componentes/AnadirComentarioComponent';
+import AnadirPost from './componentes/AnadirPostComponent';
+import BotonAnadirPost from './componentes/BotonAnadirPostComponent.js';
 
 const store = ConfigureStore();
 
@@ -41,7 +42,7 @@ const saveData = async (key, value) => {
 export default function App() {
 
   const estaLogin = true;
-
+  const [mostrarAnadirPost, setMostrarAnadirPost] = useState(false);
   return (
     <Provider store={store}>
       <SafeAreaProvider>
@@ -49,9 +50,15 @@ export default function App() {
           estaLogin ?
 
             <View style={styles.container}>
-              {/* <AnadirComentario /> */}
-              <Campobase />
-              <StatusBar style="auto" />
+              {mostrarAnadirPost ?
+                <AnadirPost /> :
+                <View style={styles.container}>
+                  <Campobase />
+                  <StatusBar style="auto" />
+                  < BotonAnadirPost onPress={() => setMostrarAnadirPost(true)} />
+                </View>
+              }
+
             </View>
             :
             <View style={styles.container}>

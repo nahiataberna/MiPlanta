@@ -8,6 +8,7 @@ import { ConfigureStore } from './redux/configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PantallaLogin from './componentes/LoginComponent';
 import Prueba from './componentes/PruebasBBDD';
+import AnadirComentario from './componentes/AnadirComentarioComponent';
 
 const store = ConfigureStore();
 
@@ -39,7 +40,7 @@ const saveData = async (key, value) => {
 
 export default function App() {
 
-  const estaLogin = false;
+  const estaLogin = true;
 
   return (
     <Provider store={store}>
@@ -48,6 +49,7 @@ export default function App() {
           estaLogin ?
 
             <View style={styles.container}>
+              {/* <AnadirComentario /> */}
               <Campobase />
               <StatusBar style="auto" />
             </View>

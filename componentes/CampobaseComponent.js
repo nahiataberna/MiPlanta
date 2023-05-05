@@ -33,7 +33,7 @@ function CustomDrawerContent(props) {
                         <Image source={require('./imagenes/logo.png')} style={styles.drawerImage} />
                     </View>
                     <View style={{ flex: 2 }}>
-                        <Text style={styles.drawerHeaderText}> Gaztaroa</Text>
+                        <Text style={styles.drawerHeaderText}>Mi planta</Text>
                     </View>
                 </View>
                 <DrawerItemList {...props} />
@@ -54,7 +54,7 @@ function HomeNavegador({ navigation }) {
                 name="Etxea"
                 component={Home}
                 options={{
-                    title: 'Campo Base',
+                    title: 'Inicio',
                 }}
             />
         </Stack.Navigator>
@@ -73,7 +73,7 @@ function DrawerNavegador() {
                     backgroundColor: colorGaztaroaClaro,
                 },
             }} >
-            <Drawer.Screen name="Campo base" component={HomeNavegador} options={{
+            <Drawer.Screen name="Inicio" component={HomeNavegador} options={{
                 drawerIcon: ({ tintColor }) => (
                     <Icon
                         name='home'
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     drawerHeader: {
-        backgroundColor: colorGaztaroaOscuro,
+        backgroundColor: 'blue',
         height: 100,
         alignItems: 'center',
         justifyContent: 'center',

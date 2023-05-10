@@ -9,6 +9,9 @@ import {
     TouchableOpacity,
 } from "react-native";
 import { color1, color2, colorError } from "../comun/comun";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from "../config/firebase";
+
 
 const PantallaLogin = () => {
     const [email, setEmail] = useState('');
@@ -24,16 +27,27 @@ const PantallaLogin = () => {
 
     const [registro, setRegistro] = useState(false);
 
-    const handleLogin = () => {
-        if (password == '') {
-            setPasswordValid(false);
-            setMensajeError("Debe rellenar todos los campos");
+    const  handleLogin = async () => {
+        try{
+
+            if (password == '') {
+                setPasswordValid(false);
+                setMensajeError("Debe rellenar todos los campos");
+            }
+            if (email == '') {
+                setEmailIsValid(false);
+                setMensajeError("Debe rellenar todos los campos");
+                return;
+            }
+            else{
+                await signInWithEmailAndPassword(auth, email, password);
+                console.log(auth);
+            }
+
+        }catch(error){
+            console.log(error)
         }
-        if (email == '') {
-            setEmailIsValid(false);
-            setMensajeError("Debe rellenar todos los campos");
-            return;
-        }
+       
         // firebase
         //   .auth()
         //   .signInWithEmailAndPassword(email, password)
@@ -62,6 +76,16 @@ const PantallaLogin = () => {
             setEmailIsValid(false);
             setMensajeError("Debe rellenar todos los campos");
             return;
+        }
+        else{
+            async function signUp() {              
+                try {
+                  await createUserWithEmailAndPassword(auth, email, password);
+                } catch (error) {
+                  console.log(error);
+                }
+            }
+            console.log(auth);
         }
 
     };
@@ -118,9 +142,9 @@ const PantallaLogin = () => {
             <TouchableOpacity style={styles.loginBtn}>
                 {
                     registro ?
-                        <Text onPress={handleRegistro} style={styles.loginText}>REGISTRARSE</Text>
+                        <Text onPress={() => handleRegistro()} style={styles.loginText}>REGISTRARSE</Text>
                         :
-                        <Text onPress={handleLogin} style={styles.loginText}>LOGIN</Text>
+                        <Text onPress={() => handleLogin()} style={styles.loginText}>LOGIN</Text>
                 }
 
             </TouchableOpacity>

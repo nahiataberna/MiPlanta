@@ -10,6 +10,7 @@ import PantallaLogin from './componentes/LoginComponent';
 import Prueba from './componentes/PruebasBBDD';
 import AnadirPost from './componentes/AnadirPostComponent';
 import BotonAnadirPost from './componentes/BotonAnadirPostComponent.js';
+import './config/firebase';
 
 const store = ConfigureStore();
 
@@ -41,7 +42,7 @@ const saveData = async (key, value) => {
 
 export default function App() {
 
-  const estaLogin = true;
+  const estaLogin = false;
   const [mostrarAnadirPost, setMostrarAnadirPost] = useState(false);
   return (
     <Provider store={store}>

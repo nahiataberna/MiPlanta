@@ -9,7 +9,7 @@ import {
     TouchableOpacity,
 } from "react-native";
 import { color1, color2, colorError } from "../comun/comun";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "../config/firebase";
 
 
@@ -47,19 +47,8 @@ const PantallaLogin = () => {
         }catch(error){
             console.log(error)
         }
-       
-        // firebase
-        //   .auth()
-        //   .signInWithEmailAndPassword(email, password)
-        //   .then(() => {
-        //     console.log('User logged in successfully!');
-        //     // Aquí puedes almacenar los datos de inicio de sesión del usuario
-        //   })
-        //   .catch((error) => {
-        //     console.log(error);
-        //   });
     };
-    const handleRegistro = () => {
+    const handleRegistro = async () => {
         if (password == password2) {
             setPassword2Valid(false);
             setMensajeError("Las contraseñas no coinciden");
@@ -77,13 +66,11 @@ const PantallaLogin = () => {
             setMensajeError("Debe rellenar todos los campos");
             return;
         }
-        else{
-            async function signUp() {              
-                try {
-                  await createUserWithEmailAndPassword(auth, email, password);
-                } catch (error) {
-                  console.log(error);
-                }
+        else{            
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                console.log(error);
             }
             console.log(auth);
         }

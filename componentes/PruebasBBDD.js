@@ -1,35 +1,43 @@
-import React, { useEffect, useState } from "react";
+import { db } from "../config/firebase";
 import {
     Text,
+    View
 } from "react-native";
-import axios from 'axios';
+import { query, getDocs, collection } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
+import MostrarPublicaciones from "./MostrarPublicaciones";
 
 const Prueba = () => {
 
-    const [prueba, setPrueba] = useState([]);
+    const [publicaciones, setPublicaciones] = useState([]);
 
     useEffect(() => {
-        console.log('Estoy en el useEffect');
-        axios.get('https://miplanta-5f179-default-rtdb.europe-west1.firebasedatabase.app/prueba.json')
-            .then((response) => {
-                //console.log(response);
+        async function queryForDocuments () {
+            const postsQuery = query(collection(db,'posts'));
+            const querySnapshot = await getDocs(postsQuery);
+            querySnapshot.forEach((snap) => {
                 let arrayRespuesta = [];
-                for (let key in response.data) {
-                    arrayRespuesta.push({
-                        id: key,
-                        nombre: response.data[key]
-                    })
-                }
-                setPrueba(arrayRespuesta);
-                console.log(arrayRespuesta);
-            }).catch((error)=>{
-                alert('Se ha producido un error');
-                console.log(error);
-            })
+                arrayRespuesta.push({
+                    id: snap.id,
+                    imagen: snap.data().img,
+                    titulo: snap.data().titulo,
+                    user: snap.data().user,
+                    fecha: snap.data().fecha
+                })
+                setPublicaciones(arrayRespuesta);
+                console.log(publicaciones);
+            });
+        }
+        queryForDocuments();
     },[]);
 
+    
+
+
     return (
-        <Text>Hola</Text>
+        <View>
+            <MostrarPublicaciones publicaciones={publicaciones} />
+        </View>
     );
 };
 

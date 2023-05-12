@@ -7,38 +7,12 @@ import { Provider } from 'react-redux';
 import { ConfigureStore } from './redux/configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PantallaLogin from './componentes/LoginComponent';
-import Publicaciones from './componentes/Publicaciones';
 import Prueba from './componentes/PruebasBBDD';
 import AnadirPost from './componentes/AnadirPostComponent';
 import BotonAnadirPost from './componentes/BotonAnadirPostComponent.js';
 import './config/firebase';
 
 const store = ConfigureStore();
-
-// Guardar datos
-const saveData = async (key, value) => {
-  try {
-    await AsyncStorage.setItem(key, value);
-    console.log('Datos guardados');
-  } catch (error) {
-    console.log('Error al guardar datos: ', error);
-  }
-};
-
-// Obtener datos
-/*const getData = async (key) => {
-  try {
-    const value = await AsyncStorage.getItem(key);
-    if (value !== null) {
-      console.log('Datos obtenidos: ', value);
-      return value;
-    } else {
-      console.log('No se encontraron datos para la clave: ', key);
-    }
-  } catch (error) {
-    console.log('Error al obtener datos: ', error);
-  }
-};*/
 
 
 export default function App() {
@@ -65,7 +39,6 @@ export default function App() {
             :
             <View style={styles.container}>
               <PantallaLogin />
-              <Prueba />
             </View>
 
         }

@@ -11,7 +11,9 @@ import {
 import { color1, color2, colorError } from "../comun/comun";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from "../config/firebase";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const store = ConfigureStore();
 
 const PantallaLogin = () => {
     const [email, setEmail] = useState('');
@@ -41,6 +43,12 @@ const PantallaLogin = () => {
             }
             else{
                 await signInWithEmailAndPassword(auth, email, password);
+                await AsyncStorage.setItem('user',email);
+                await AsyncStorage.setItem('pass',password);
+
+                const emailasync = await AsyncStorage.getItem('user');
+                console.log("Esta funcionando");
+                console.log(emailasync);
                 console.log(auth);
             }
 
@@ -69,6 +77,7 @@ const PantallaLogin = () => {
         else{            
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
+
             } catch (error) {
                 console.log(error);
             }

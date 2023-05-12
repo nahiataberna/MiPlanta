@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import { ConfigureStore } from './redux/configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PantallaLogin from './componentes/LoginComponent';
-import Prueba from './componentes/PruebasBBDD';
+import Publicaciones from './componentes/Publicaciones';
 import AnadirPost from './componentes/AnadirPostComponent';
 import BotonAnadirPost from './componentes/BotonAnadirPostComponent.js';
 import './config/firebase';
@@ -64,7 +64,7 @@ export default function App() {
             :
             <View style={styles.container}>
               <PantallaLogin />
-              <Prueba />
+              <Publicaciones />
             </View>
 
         }

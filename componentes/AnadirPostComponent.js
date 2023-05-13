@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { Icon } from '@rneui/themed';
 import { Image, View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import color_botones from '../comun/comun.js';
-
+import { storage, db } from '../config/firebase.js';
+import { collection, addDoc } from "firebase/firestore";
+import { uploadBytes, getDownloadURL, ref } from "firebase/storage";
 import * as Permissions from 'expo-permissions';
+
+let url = '';
 
 async function requestCameraPermission() {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
@@ -28,15 +31,15 @@ function AnadirPost() {
     const [foto, setFoto] = useState(null);
 
     function handleTituloChange(event) {
-        setTitulo(event.target.value);
+        setTitulo(event);
     }
 
     function handleDescripcionChange(event) {
-        setDescripcion(event.target.value);
+        setDescripcion(event);
     }
 
-    function handleSubmit(event) {
-
+    function handleSubmit() {
+        subirPostBBDD(titulo, descripcion);
     }
 
     async function handleTakePhoto() {
@@ -46,11 +49,16 @@ function AnadirPost() {
             aspect: [300, 200],
             quality: 1,
         });
-        if (!result.cancelled) {
-            // Aquí puedes guardar la imagen en tu estado o subirla a un servidor
-            setFoto(result.uri);
+        if (!result.canceled) {
+            setFoto(result.assets[0]);
         }
     }
+    useEffect(() => {
+        if (foto) {
+            subirFotoBBDD(foto);
+        }
+    }, [foto]);
+
 
     return (
         <View style={styles.container}>
@@ -74,7 +82,7 @@ function AnadirPost() {
             <Text style={styles.label}>Foto:</Text>
 
             {foto ? (<View>
-                <Image style={styles.image} source={{ uri: foto }} />
+                <Image style={styles.image} source={{ uri: foto.uri }} />
                 <TouchableOpacity>
 
                     <Text onPress={handleTakePhoto} >Volver a sacar foto</Text>
@@ -151,5 +159,36 @@ const styles = StyleSheet.create({
 
     },
 });
+
+async function subirFotoBBDD(foto) {
+
+    const user = 'nahiataberna@gmail.com';
+    const fecha = (new Date()).toString();
+    const storageRef = ref(storage, user + "/" + fecha);
+    console.log(foto);
+
+    uploadBytes(storageRef, foto).then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
+            console.log('File available at', downloadURL);
+            url = downloadURL;
+        });
+    });
+};
+
+async function subirPostBBDD(titulo, descripcion) {
+    console.log("aqui");
+    const docRef = await addDoc(collection(db, "posts"), {
+        user: "nahiataberna@gmail.com",
+        fecha: new Date(),
+        descripcion: descripcion,
+        titulo: titulo,
+        img: url
+    }).then((docRef) => {
+        if (docRef) {
+            alert("Se ha enviado");
+        }
+    });
+}
+
 
 export default AnadirPost;

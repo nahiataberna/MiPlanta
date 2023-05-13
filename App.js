@@ -17,7 +17,7 @@ const store = ConfigureStore();
 
 export default function App() {
 
-  const estaLogin = false;
+  const estaLogin = true;
   const [mostrarAnadirPost, setMostrarAnadirPost] = useState(false);
   return (
     <Provider store={store}>

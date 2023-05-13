@@ -13,7 +13,6 @@ import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'fire
 import { auth } from "../config/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const store = ConfigureStore();
 
 const PantallaLogin = () => {
     const [email, setEmail] = useState('');
@@ -29,8 +28,8 @@ const PantallaLogin = () => {
 
     const [registro, setRegistro] = useState(false);
 
-    const  handleLogin = async () => {
-        try{
+    const handleLogin = async () => {
+        try {
 
             if (password == '') {
                 setPasswordValid(false);
@@ -41,10 +40,10 @@ const PantallaLogin = () => {
                 setMensajeError("Debe rellenar todos los campos");
                 return;
             }
-            else{
+            else {
                 await signInWithEmailAndPassword(auth, email, password);
-                await AsyncStorage.setItem('user',email);
-                await AsyncStorage.setItem('pass',password);
+                await AsyncStorage.setItem('user', email);
+                await AsyncStorage.setItem('pass', password);
 
                 const emailasync = await AsyncStorage.getItem('user');
                 console.log("Esta funcionando");
@@ -52,7 +51,7 @@ const PantallaLogin = () => {
                 console.log(auth);
             }
 
-        }catch(error){
+        } catch (error) {
             console.log(error)
         }
     };
@@ -74,7 +73,7 @@ const PantallaLogin = () => {
             setMensajeError("Debe rellenar todos los campos");
             return;
         }
-        else{            
+        else {
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
 

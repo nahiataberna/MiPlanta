@@ -27,7 +27,7 @@ export default function App() {
 
             <View style={styles.container}>
               {mostrarAnadirPost ?
-                <AnadirPost /> :
+                <AnadirPost setMostrarAnadirPost={setMostrarAnadirPost} /> :
                 <View style={styles.container}>
                   <Campobase />
                   <StatusBar style="auto" />

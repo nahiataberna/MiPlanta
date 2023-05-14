@@ -25,7 +25,7 @@ async function requestCameraRollPermission() {
 
 const Separator = () => <View style={styles.separator} />;
 
-function AnadirPost() {
+function AnadirPost(props) {
     const [titulo, setTitulo] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [foto, setFoto] = useState(null);
@@ -39,7 +39,11 @@ function AnadirPost() {
     }
 
     function handleSubmit() {
-        subirPostBBDD(titulo, descripcion);
+        subirPostBBDD(titulo, descripcion, props.setMostrarAnadirPost).then(() => {
+            setTitulo('');
+            setDescripcion('');
+            setFoto('');
+        });
     }
 
     async function handleTakePhoto() {
@@ -50,12 +54,12 @@ function AnadirPost() {
             quality: 1,
         });
         if (!result.canceled) {
-            setFoto(result.assets[0]);
+            setFoto(result.assets[0].uri);
         }
     }
     useEffect(() => {
         if (foto) {
-            subirFotoBBDD(foto);
+            subirFotoBBDD(foto, props);
         }
     }, [foto]);
 
@@ -82,7 +86,7 @@ function AnadirPost() {
             <Text style={styles.label}>Foto:</Text>
 
             {foto ? (<View>
-                <Image style={styles.image} source={{ uri: foto.uri }} />
+                <Image style={styles.image} source={{ uri: foto }} />
                 <TouchableOpacity>
 
                     <Text onPress={handleTakePhoto} >Volver a sacar foto</Text>
@@ -162,21 +166,30 @@ const styles = StyleSheet.create({
 
 async function subirFotoBBDD(foto) {
 
-    const user = 'nahiataberna@gmail.com';
-    const fecha = (new Date()).toString();
-    const storageRef = ref(storage, user + "/" + fecha);
-    console.log(foto);
+    try {
+        const user = 'nahiataberna@gmail.com';
+        const fecha = (new Date()).toString();
 
-    uploadBytes(storageRef, foto).then((snapshot) => {
-        getDownloadURL(snapshot.ref).then((downloadURL) => {
-            console.log('File available at', downloadURL);
-            url = downloadURL;
+        const response = await fetch(foto, {
+            responseType: 'blob',
         });
-    });
+        const blob = await response.blob();
+
+        const storageRef = ref(storage, user + "/" + fecha);
+
+        uploadBytes(storageRef, blob).then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((downloadURL) => {
+                console.log('File available at', downloadURL);
+                url = downloadURL;
+            });
+        });
+    } catch (error) {
+        console.log("Error en subirFotoBBDD: " + error);
+    }
+
 };
 
-async function subirPostBBDD(titulo, descripcion) {
-    console.log("aqui");
+async function subirPostBBDD(titulo, descripcion, setMostrarAnadirPost) {
     const docRef = await addDoc(collection(db, "posts"), {
         user: "nahiataberna@gmail.com",
         fecha: new Date(),
@@ -185,7 +198,8 @@ async function subirPostBBDD(titulo, descripcion) {
         img: url
     }).then((docRef) => {
         if (docRef) {
-            alert("Se ha enviado");
+            alert("Se ha añadido el post");
+            setMostrarAnadirPost(false);
         }
     });
 }

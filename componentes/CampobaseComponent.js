@@ -3,13 +3,14 @@ import Constants from 'expo-constants';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './HomeComponent';
-import { View, StyleSheet, Image, Text } from 'react-native';
+import { View, StyleSheet, Image, Text, TouchableOpacity, Linking } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Icon } from '@rneui/themed';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colorGaztaroaClaro, colorGaztaroaOscuro } from '../comun/comun';
 import { connect } from 'react-redux';
 import { fetchExcursiones } from '../redux/ActionCreators';
+import * as Permissions from 'expo-permissions';
 
 
 const Stack = createNativeStackNavigator();
@@ -23,6 +24,13 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     fetchExcursiones: () => dispatch(fetchExcursiones()),
 })
+
+async function requestEmailPermission() {
+    const { status } = await Permissions.askAsync(Permissions.CONTACTS);
+    if (status !== 'granted') {
+        alert('Lo siento, necesitamos los permisos para enviar una sugerencia.');
+    }
+}
 
 function CustomDrawerContent(props) {
     return (
@@ -63,6 +71,12 @@ function HomeNavegador({ navigation }) {
 
 
 function DrawerNavegador() {
+    async function handleSugerencia() {
+        await requestEmailPermission();
+        const uri = 'mailto:miplantanahiainigo@gmail.com?subject=Sugerencia%20MiPlanta';
+        Linking.openURL(uri);
+    }
+
     return (
         <Drawer.Navigator
             initialRouteName="Home"
@@ -83,6 +97,22 @@ function DrawerNavegador() {
                     />
                 )
             }} />
+            <Drawer.Screen name="Sugerencias e incidencias" options={{
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='message-question'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }}>
+                {() => (
+                    <TouchableOpacity onPress={handleSugerencia} style={styles.button}>
+                        <Text style={styles.buttonText}>Enviar correo electrónico</Text>
+                    </TouchableOpacity>
+                )}
+            </Drawer.Screen>
 
 
         </Drawer.Navigator>
@@ -127,7 +157,19 @@ const styles = StyleSheet.create({
         margin: 10,
         width: 80,
         height: 60
-    }
+    },
+    button: {
+        backgroundColor: 'blue',
+        borderRadius: 10,
+        padding: 10,
+        alignSelf: 'center',
+        marginTop: 50,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Campobase);

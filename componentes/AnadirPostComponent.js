@@ -6,6 +6,7 @@ import { storage, db } from '../config/firebase.js';
 import { collection, addDoc } from "firebase/firestore";
 import { uploadBytes, getDownloadURL, ref } from "firebase/storage";
 import { Camera } from "expo-camera";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 let url = '';
 
@@ -154,7 +155,7 @@ async function subirFotoBBDD(foto) {
 
     try {
         const fecha = (new Date()).toString();
-
+        const user = await AsyncStorage.getItem('user');
         const response = await fetch(foto, {
             responseType: 'blob',
         });
@@ -175,8 +176,9 @@ async function subirFotoBBDD(foto) {
 };
 
 async function subirPostBBDD(titulo, descripcion, setMostrarAnadirPost) {
+    const user = await AsyncStorage.getItem('user');
     const docRef = await addDoc(collection(db, "posts"), {
-        user: "nahiataberna@gmail.com",
+        user: user,
         fecha: new Date(),
         descripcion: descripcion,
         titulo: titulo,

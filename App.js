@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import { ConfigureStore } from './redux/configureStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PantallaLogin from './componentes/LoginComponent';
-import Prueba from './componentes/PruebasBBDD';
+import Publicaciones from './componentes/PruebasBBDD';
 import AnadirPost from './componentes/AnadirPostComponent';
 import BotonAnadirPost from './componentes/BotonAnadirPostComponent.js';
 import './config/firebase';

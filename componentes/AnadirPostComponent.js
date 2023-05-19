@@ -155,7 +155,7 @@ async function subirFotoBBDD(foto) {
     try {
         const fecha = (new Date()).toString();
 
-        const response = await fetch(foto.uri, {
+        const response = await fetch(foto, {
             responseType: 'blob',
         });
         const blob = await response.blob();

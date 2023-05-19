@@ -5,23 +5,9 @@ import { Image, View, Text, TextInput, Button, StyleSheet, TouchableOpacity } fr
 import { storage, db } from '../config/firebase.js';
 import { collection, addDoc } from "firebase/firestore";
 import { uploadBytes, getDownloadURL, ref } from "firebase/storage";
-import * as Permissions from 'expo-permissions';
+import { Camera } from "expo-camera";
 
 let url = '';
-
-async function requestCameraPermission() {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
-    if (status !== 'granted') {
-        alert('Lo siento, necesitamos los permisos de la cámara para tomar una foto');
-    }
-}
-
-async function requestCameraRollPermission() {
-    const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-    if (status !== 'granted') {
-        alert('Lo siento, necesitamos los permisos de la biblioteca de imágenes para seleccionar una foto');
-    }
-}
 
 const Separator = () => <View style={styles.separator} />;
 
@@ -47,7 +33,7 @@ function AnadirPost(props) {
     }
 
     async function handleTakePhoto() {
-        await requestCameraPermission();
+        await Camera.requestCameraPermissionsAsync();
         let result = await ImagePicker.launchCameraAsync({
             allowsEditing: true,
             aspect: [300, 200],
@@ -167,10 +153,9 @@ const styles = StyleSheet.create({
 async function subirFotoBBDD(foto) {
 
     try {
-        const user = 'nahiataberna@gmail.com';
         const fecha = (new Date()).toString();
 
-        const response = await fetch(foto, {
+        const response = await fetch(foto.uri, {
             responseType: 'blob',
         });
         const blob = await response.blob();
@@ -179,7 +164,7 @@ async function subirFotoBBDD(foto) {
 
         uploadBytes(storageRef, blob).then((snapshot) => {
             getDownloadURL(snapshot.ref).then((downloadURL) => {
-                console.log('File available at', downloadURL);
+                console.log('La imagen se encuentra en ', downloadURL);
                 url = downloadURL;
             });
         });

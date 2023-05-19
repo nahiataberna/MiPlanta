@@ -100,7 +100,7 @@ function DrawerNavegador() {
             <Drawer.Screen name="Sugerencias e incidencias" options={{
                 drawerIcon: ({ tintColor }) => (
                     <Icon
-                        name='message-question'
+                        name='question'
                         type='font-awesome'
                         size={24}
                         color={tintColor}

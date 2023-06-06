@@ -54,9 +54,9 @@ function HomeNavegador({ navigation }) {
     return (
         <Stack.Navigator initialRouteName="Home" screenOptions={{
             headerMode: 'screen',
-            headerTintColor: 'red',
-            headerStyle: { backgroundColor: colorGaztaroaOscuro }, headerTitleStyle: { color: 'red' },
-            headerLeft: () => (<Icon name="menu" size={28} color='red' onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />),
+            headerTintColor: '#a4c7cc',
+            headerStyle: { backgroundColor: colorGaztaroaOscuro }, headerTitleStyle: { color: '#a4c7cc' },
+            headerLeft: () => (<Icon name="menu" size={28} color='#a4c7cc' onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />),
         }} >
             <Stack.Screen
                 name="Etxea"
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     drawerHeader: {
-        backgroundColor: 'blue',
+        backgroundColor: '#a4ccbd',
         height: 100,
         alignItems: 'center',
         justifyContent: 'center',

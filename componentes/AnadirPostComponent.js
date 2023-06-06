@@ -93,7 +93,6 @@ function AnadirPost(props) {
                     onPress={handleSubmit}
                 />
             </View>
-
         </View>
     );
 }
@@ -137,7 +136,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         width: 100,
         height: 40,
-        backgroundColor: '#7373',
+        backgroundColor: '#a4ccbd',
         color: 'black',
         position: 'absolute',
         bottom: 50,
@@ -189,7 +188,6 @@ async function subirPostBBDD(titulo, descripcion, setMostrarAnadirPost) {
             setMostrarAnadirPost(false);
         }
     });
-}
-
+};
 
 export default AnadirPost;

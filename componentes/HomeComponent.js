@@ -1,21 +1,15 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState } from 'react';
 import { Text, ScrollView, View } from 'react-native';
-import { Card } from '@rneui/themed';
+import { Card, Image } from '@rneui/themed';
 import { StyleSheet } from 'react-native';
-import { baseUrl } from '../comun/comun';
-import { connect } from 'react-redux';
 import { IndicadorActividad } from './IndicadorActividadComponent';
 
-const mapStateToProps = state => {
-    return {
-        excursiones: state.excursiones,
-    }
-}
+import { db } from '../config/firebase.js';
+import { collection, getDocs, orderBy, limit, query } from "firebase/firestore";
 
 function RenderItem(props) {
 
-
-    const item = props.item;
+    const posts = props.posts;
 
     if (props.isLoading) {
         return (
@@ -30,44 +24,102 @@ function RenderItem(props) {
     } else {
         const styles = StyleSheet.create({
             title: {
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                color: 'chocolate',
-                padding: 10,
-                fontSize: 35,
                 fontWeight: 'bold',
-                textAlign: 'center',
+            },
+            userContainer: {
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginBottom: 10,
+            },
+            user: {
+                fontSize: 12,
+                color: '#888',
+            },
+            date: {
+                fontSize: 12,
+                color: '#888',
+            },
+            description: {
+                marginBottom: 10,
+            },
+            image: {
+                width: 300,
+                height: 200,
+                marginBottom: 10,
             },
         });
 
-        if (item != null) {
-            return (
-                <Card>
+        if (posts != null && posts.length > 0) {
+            return posts.map((post, index) => (
+                <Card key={index}>
+                    <Card.Title style={styles.title}>{post.titulo}</Card.Title>
                     <Card.Divider />
-                    <Card.Image source={{ uri: baseUrl + item.imagen }}></Card.Image>
-                    <Card.Title style={styles.title}>{item.nombre}</Card.Title>
-                    <Text style={{ margin: 20 }}>
-                        {item.descripcion}
-                    </Text>
+                    <View style={styles.userContainer}>
+                        <Text style={styles.user}>{post.user}</Text>
+
+                    </View>
+                    <Text style={styles.description}>{post.descripcion}</Text>
+                    <Image source={{ uri: post.img }} style={styles.image} />
+                    <Text style={styles.date}>{post.fecha}</Text>
                 </Card>
-            );
+            ))
         }
         else {
             return (<View></View>);
         }
     }
-}
+};
 
-class Home extends Component {
-    render() {
-        return (
-            <ScrollView>
-                <RenderItem item={this.props.excursiones.excursiones.filter((excursion) => excursion.destacado)[0]} isLoading={this.props.excursiones.isLoading} errMess={this.props.excursiones.errMess} />
-            </ScrollView>
-        );
+
+
+
+async function obtenerPostsBBDD(setIsLoading, setError, setPosts, isLoading, posts) {
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef, orderBy("fecha", "desc"), limit(20));
+    const querySnapshot = await getDocs(q);
+
+    let postsBBDD = [];
+    querySnapshot.forEach((doc) => {
+        setIsLoading(false);
+
+        const fecha = new Date(doc.data().fecha.seconds * 1000 + Math.floor(doc.data().fecha.nanoseconds / 1000000));
+
+
+        const dia = fecha.getDate();
+        const mes = fecha.toLocaleString('es-ES', { month: 'long' });
+        const anio = fecha.getFullYear();
+        const hora = fecha.getHours();
+        const minutos = fecha.getMinutes().toString().padStart(2, '0');
+        const fechaString = `${dia} de ${mes} de ${anio}, ${hora}:${minutos}`;
+
+        postsBBDD.push({
+            user: doc.data().user,
+            fecha: fechaString,
+            titulo: doc.data().titulo,
+            descripcion: doc.data().descripcion,
+            img: doc.data().img
+        });
+    });
+    setPosts(postsBBDD);
+    if (!isLoading && !posts) {
+        setError("Ha habido un error");
     }
-}
+};
 
-export default connect(mapStateToProps)(Home);
+function Home(props) {
+    const [posts, setPosts] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        obtenerPostsBBDD(setIsLoading, setError, setPosts, isLoading, posts);
+    }, []);
+    return (
+        <ScrollView>
+            <RenderItem posts={posts} isLoading={isLoading} errMess={error} />
+        </ScrollView>
+    );
+
+};
+
+export default Home;

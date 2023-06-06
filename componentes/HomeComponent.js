@@ -6,6 +6,8 @@ import { IndicadorActividad } from './IndicadorActividadComponent';
 
 import { db } from '../config/firebase.js';
 import { collection, getDocs, orderBy, limit, query } from "firebase/firestore";
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Icon } from '@rneui/themed';
 
 function RenderItem(props) {
 
@@ -51,17 +53,18 @@ function RenderItem(props) {
 
         if (posts != null && posts.length > 0) {
             return posts.map((post, index) => (
-                <Card key={index}>
-                    <Card.Title style={styles.title}>{post.titulo}</Card.Title>
-                    <Card.Divider />
-                    <View style={styles.userContainer}>
-                        <Text style={styles.user}>{post.user}</Text>
-
-                    </View>
-                    <Text style={styles.description}>{post.descripcion}</Text>
-                    <Image source={{ uri: post.img }} style={styles.image} />
-                    <Text style={styles.date}>{post.fecha}</Text>
-                </Card>
+                <TouchableOpacity key={index} onPress={() => props.setMostrarPost(post)}>
+                    <Card>
+                        <Card.Title style={styles.title}>{post.titulo}</Card.Title>
+                        <Card.Divider />
+                        <View style={styles.userContainer}>
+                            <Text style={styles.user}>{post.user}</Text>
+                        </View>
+                        <Text style={styles.description}>{post.descripcion}</Text>
+                        <Image source={{ uri: post.img }} style={styles.image} />
+                        <Text style={styles.date}>{post.fecha}</Text>
+                    </Card>
+                </TouchableOpacity>
             ))
         }
         else {
@@ -111,12 +114,62 @@ function Home(props) {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
+    const [mostrarPost, setMostrarPost] = useState('');
+
     useEffect(() => {
         obtenerPostsBBDD(setIsLoading, setError, setPosts, isLoading, posts);
     }, []);
+    const styles = StyleSheet.create({
+        container: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 16,
+        },
+        goBack: {
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            zIndex: 1,
+        },
+        titulo: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            marginBottom: 14,
+        },
+        info: {
+            color: 'gray',
+            marginBottom: 8,
+        },
+        descripcion: {
+            marginBottom: 8,
+        },
+        imagen: {
+            width: 300,
+            height: 200,
+        },
+    });
     return (
         <ScrollView>
-            <RenderItem posts={posts} isLoading={isLoading} errMess={error} />
+            {mostrarPost === '' ? (
+                <RenderItem posts={posts} isLoading={isLoading} errMess={error} setMostrarPost={setMostrarPost} />
+            ) : (
+                <View style={styles.container}>
+                    <View style={styles.goBack}>
+                        <Icon
+                            name="arrow-left"
+                            type="font-awesome"
+                            size={24}
+                            onPress={() => setMostrarPost('')}
+                        />
+                    </View>
+
+                    <Text style={styles.titulo}>{mostrarPost.titulo}</Text>
+                    <Text style={styles.info}>{mostrarPost.user} - {mostrarPost.fecha}</Text>
+                    <Text style={styles.descripcion}>{mostrarPost.descripcion}</Text>
+                    <Image source={{ uri: mostrarPost.img }} style={styles.imagen} />
+                </View>
+            )}
         </ScrollView>
     );
 

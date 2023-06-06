@@ -97,7 +97,7 @@ function DrawerNavegador() {
                     />
                 )
             }} />
-            <Drawer.Screen name="Sugerencias e incidencias" options={{
+            <Drawer.Screen name="Indicencia" options={{
                 drawerIcon: ({ tintColor }) => (
                     <Icon
                         name='question'
@@ -108,9 +108,13 @@ function DrawerNavegador() {
                 )
             }}>
                 {() => (
-                    <TouchableOpacity onPress={handleSugerencia} style={styles.button}>
-                        <Text style={styles.buttonText}>Enviar correo electrónico</Text>
-                    </TouchableOpacity>
+                    <View>
+                        <Text style={styles.textoIncidencia} > Si desea comunicarse con soporte para consultar una posible incidencia o enviar sugerencias, hágalo a través del correo electrónico.</Text>
+                        <TouchableOpacity onPress={handleSugerencia} style={styles.button}>
+                            <Text style={styles.buttonText}>Enviar correo electrónico</Text>
+                        </TouchableOpacity>
+                    </View>
+
                 )}
             </Drawer.Screen>
 
@@ -159,7 +163,7 @@ const styles = StyleSheet.create({
         height: 60
     },
     button: {
-        backgroundColor: 'blue',
+        backgroundColor: '#a4ccbd',
         borderRadius: 10,
         padding: 10,
         alignSelf: 'center',
@@ -167,9 +171,14 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: 'bold',
     },
+    textoIncidencia: {
+        padding: 20,
+        alignSelf: 'center',
+        marginTop: 50,
+    }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Campobase);

@@ -74,8 +74,6 @@ function RenderItem(props) {
 };
 
 
-
-
 async function obtenerPostsBBDD(setIsLoading, setError, setPosts, isLoading, posts) {
     const postsRef = collection(db, "posts");
     const q = query(postsRef, orderBy("fecha", "desc"), limit(20));

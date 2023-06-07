@@ -5,7 +5,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 import { IndicadorActividad } from './IndicadorActividadComponent';
 
 import { db } from '../config/firebase.js';
-import { collection, getDocs, deleteDoc, orderBy, limit, query, where, addDoc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, orderBy, limit, query, where, addDoc, doc } from "firebase/firestore";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Icon } from '@rneui/themed';
 
@@ -117,8 +117,8 @@ function RenderComentarios(props) {
 
         if (comentarios != null && comentarios.length > 0) {
             return comentarios.map((comentario, index) => (
-                <View style={styles.container}>
-                    <Card key={index} >
+                <View style={styles.container} key={index}>
+                    <Card  >
                         <Text style={styles.description}>{comentario.comentario}</Text>
                         <Card.Divider />
                         <View style={styles.userContainer}>
@@ -215,30 +215,31 @@ async function subirComentarioBBDD(comentario, postid) {
         post: postid
     });
 };
-async function guardarPostBBDD(postid) {
+async function guardarPostBBDD(postid, setGuardado) {
     const user = await AsyncStorage.getItem('user');
     await addDoc(collection(db, "guardados"), {
         user: user,
         post: postid
+    }).then(() => {
+        setGuardado(true);
     });
 };
-async function eliminarPostBBDD(postid) {
+async function eliminarPostBBDD(postid, setGuardado) {
     const user = await AsyncStorage.getItem('user');
     const guardadosRef = collection(db, "guardados");
     const q = query(guardadosRef, where("post", '==', postid), where("user", "==", user));
     const querySnapshot = await getDocs(q);
     try {
         let idBBDDpost;
-        querySnapshot.forEach((doc) => {
+        await querySnapshot.forEach((doc) => {
             idBBDDpost = doc.id;
-        }).then(() => {
-            deleteDoc(doc(db, "guardados", idBBDDpost)).then(() => {
-                setGuardado(false);
-            });
         });
 
+        deleteDoc(doc(db, "guardados", idBBDDpost)).then(() => {
+            setGuardado(false);
+        });
     } catch (e) {
-        console.log("Error en comprobarPostGuardado: " + e);
+        console.log("Error en eliminarPostBBDD: " + e);
     }
 };
 
@@ -292,10 +293,10 @@ function Home(props) {
         });
     };
     const guardarPost = (idPost) => {
-        guardarPostBBDD(idPost);
+        guardarPostBBDD(idPost, setGuardado);
     };
     const eliminarPost = (idPost) => {
-        eliminarPostBBDD(idPost);
+        eliminarPostBBDD(idPost, setGuardado);
     };
 
     const styles = StyleSheet.create({
@@ -407,30 +408,32 @@ function Home(props) {
                         <Text style={styles.info}>{mostrarPost.user} - {mostrarPost.fecha}</Text>
                         <Text style={styles.descripcion}>{mostrarPost.descripcion}</Text>
                         <Image source={{ uri: mostrarPost.img }} style={styles.imagen} />
-                        <TouchableOpacity onPress={() => setModalVisible(true)}>
-                            <Icon
-                                name="comment"
-                                type="font-awesome"
-                                size={24}
-                            />
-                        </TouchableOpacity>
-                        {guardado ?
-                            <TouchableOpacity onPress={() => eliminarPost(mostrarPost.id)}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <TouchableOpacity onPress={() => setModalVisible(true)}>
                                 <Icon
-                                    name="bookmark"
+                                    name="comment"
                                     type="font-awesome"
                                     size={24}
                                 />
                             </TouchableOpacity>
-                            :
-                            <TouchableOpacity onPress={() => guardarPost(mostrarPost.id)}>
-                                <Icon
-                                    name="bookmark-o"
-                                    type="font-awesome"
-                                    size={24}
-                                />
-                            </TouchableOpacity>
-                        }
+                            {guardado ?
+                                <TouchableOpacity onPress={() => eliminarPost(mostrarPost.id)}>
+                                    <Icon
+                                        name="bookmark"
+                                        type="font-awesome"
+                                        size={24}
+                                    />
+                                </TouchableOpacity>
+                                :
+                                <TouchableOpacity onPress={() => guardarPost(mostrarPost.id)}>
+                                    <Icon
+                                        name="bookmark-o"
+                                        type="font-awesome"
+                                        size={24}
+                                    />
+                                </TouchableOpacity>
+                            }
+                        </View>
                     </Card>
                     <Card.Divider></Card.Divider>
                     <Text style={styles.comentarioTitulo}>Comentarios: </Text>

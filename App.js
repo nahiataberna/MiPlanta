@@ -31,7 +31,7 @@ export default function App() {
                 <View style={styles.container}>
                   <Campobase />
                   <StatusBar style="auto" />
-                  < BotonAnadirPost onPress={() => setMostrarAnadirPost(true)} />
+                  < BotonAnadirPost onPress={() => setMostrarAnadirPost(true)}  />
                 </View>
               }
 

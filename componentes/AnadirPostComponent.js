@@ -53,6 +53,14 @@ function AnadirPost(props) {
 
     return (
         <View style={styles.container}>
+            <View style={styles.goBack}>
+                <Icon
+                    name="arrow-left"
+                    type="font-awesome"
+                    size={24}
+                    onPress={() => props.setMostrarAnadirPost(false)}
+                />
+            </View>
             <Text style={styles.label}>Título:</Text>
             <TextInput
                 style={styles.input}
@@ -147,6 +155,12 @@ const styles = StyleSheet.create({
         borderBottomColor: '#73783',
         borderBottomWidth: 3,
 
+    },
+    goBack: {
+        position: 'absolute',
+        top: 80,
+        left: 16,
+        zIndex: 1,
     },
 });
 

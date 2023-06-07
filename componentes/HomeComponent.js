@@ -5,7 +5,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 import { IndicadorActividad } from './IndicadorActividadComponent';
 
 import { db } from '../config/firebase.js';
-import { collection, getDocs, orderBy, limit, query, where, addDoc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, orderBy, limit, query, where, addDoc } from "firebase/firestore";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Icon } from '@rneui/themed';
 
@@ -215,6 +215,46 @@ async function subirComentarioBBDD(comentario, postid) {
         post: postid
     });
 };
+async function guardarPostBBDD(postid) {
+    const user = await AsyncStorage.getItem('user');
+    await addDoc(collection(db, "guardados"), {
+        user: user,
+        post: postid
+    });
+};
+async function eliminarPostBBDD(postid) {
+    const user = await AsyncStorage.getItem('user');
+    const guardadosRef = collection(db, "guardados");
+    const q = query(guardadosRef, where("post", '==', postid), where("user", "==", user));
+    const querySnapshot = await getDocs(q);
+    try {
+        let idBBDDpost;
+        querySnapshot.forEach((doc) => {
+            idBBDDpost = doc.id;
+        }).then(() => {
+            deleteDoc(doc(db, "guardados", idBBDDpost)).then(() => {
+                setGuardado(false);
+            });
+        });
+
+    } catch (e) {
+        console.log("Error en comprobarPostGuardado: " + e);
+    }
+};
+
+async function comprobarPostGuardado(postid, setGuardado) {
+    const user = await AsyncStorage.getItem('user');
+    const guardadosRef = collection(db, "guardados");
+    const q = query(guardadosRef, where("post", '==', postid), where("user", "==", user));
+    const querySnapshot = await getDocs(q);
+    try {
+        querySnapshot.forEach((doc) => {
+            setGuardado(true);
+        });
+    } catch (e) {
+        console.log("Error en comprobarPostGuardado: " + e);
+    }
+};
 
 function Home(props) {
     const [posts, setPosts] = useState('');
@@ -230,13 +270,17 @@ function Home(props) {
     const [modalVisible, setModalVisible] = useState(false);
     const [comentario, setComentario] = useState('');
 
+    const [guardado, setGuardado] = useState(false);
+
     useEffect(() => {
         obtenerPostsBBDD(setIsLoading, setError, setPosts);
     }, []);
 
     useEffect(() => {
+        setGuardado(false);
         if (mostrarPost != '') {
             obtenerComentariosBBDD(setIsLoadingComentarios, setErrorComentarios, setComentarios, mostrarPost.id);
+            comprobarPostGuardado(mostrarPost.id, setGuardado);
         }
     }, [mostrarPost]);
 
@@ -246,6 +290,12 @@ function Home(props) {
             setComentario('');
             obtenerComentariosBBDD(setIsLoadingComentarios, setErrorComentarios, setComentarios, mostrarPost.id);
         });
+    };
+    const guardarPost = (idPost) => {
+        guardarPostBBDD(idPost);
+    };
+    const eliminarPost = (idPost) => {
+        eliminarPostBBDD(idPost);
     };
 
     const styles = StyleSheet.create({
@@ -364,6 +414,23 @@ function Home(props) {
                                 size={24}
                             />
                         </TouchableOpacity>
+                        {guardado ?
+                            <TouchableOpacity onPress={() => eliminarPost(mostrarPost.id)}>
+                                <Icon
+                                    name="bookmark"
+                                    type="font-awesome"
+                                    size={24}
+                                />
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity onPress={() => guardarPost(mostrarPost.id)}>
+                                <Icon
+                                    name="bookmark-o"
+                                    type="font-awesome"
+                                    size={24}
+                                />
+                            </TouchableOpacity>
+                        }
                     </Card>
                     <Card.Divider></Card.Divider>
                     <Text style={styles.comentarioTitulo}>Comentarios: </Text>

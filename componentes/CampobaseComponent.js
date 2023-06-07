@@ -28,7 +28,7 @@ const mapDispatchToProps = dispatch => ({
 async function requestEmailPermission() {
     const { status } = await Permissions.askAsync(Permissions.CONTACTS);
     if (status !== 'granted') {
-        alert('Lo siento, necesitamos los permisos para enviar una sugerencia.');
+        alert('Lo siento, necesitamos los permisos para enviar una incidencia.');
     }
 }
 
@@ -60,11 +60,31 @@ function HomeNavegador({ navigation }) {
         }} >
             <Stack.Screen
                 name="Etxea"
-                component={Home}
                 options={{
                     title: 'Inicio',
                 }}
-            />
+            >
+                {(props) => <Home {...props} esPaginaGuardados={false} />}
+            </Stack.Screen>
+        </Stack.Navigator>
+    );
+}
+function GuardadosNavegador({ navigation }) {
+    return (
+        <Stack.Navigator initialRouteName="Guardados" screenOptions={{
+            headerMode: 'screen',
+            headerTintColor: '#a4c7cc',
+            headerStyle: { backgroundColor: colorGaztaroaOscuro }, headerTitleStyle: { color: '#a4c7cc' },
+            headerLeft: () => (<Icon name="menu" size={28} color='#a4c7cc' onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />),
+        }} >
+            <Stack.Screen
+                name="Guardado"
+                options={{
+                    title: 'Guardados',
+                }}
+            >
+                {(props) => <Home {...props} esPaginaGuardados={true} />}
+            </Stack.Screen>
         </Stack.Navigator>
     );
 }
@@ -97,6 +117,16 @@ function DrawerNavegador() {
                     />
                 )
             }} />
+            <Drawer.Screen name="Guardados" component={GuardadosNavegador} options={{
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='bookmark-o'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }} />
             <Drawer.Screen name="Indicencia" options={{
                 drawerIcon: ({ tintColor }) => (
                     <Icon
@@ -105,7 +135,10 @@ function DrawerNavegador() {
                         size={24}
                         color={tintColor}
                     />
-                )
+                ),
+                headerShown: true,
+                headerStyle: { backgroundColor: colorGaztaroaOscuro },
+                headerTitleStyle: { color: '#a4c7cc' }
             }}>
                 {() => (
                     <View>
@@ -117,7 +150,6 @@ function DrawerNavegador() {
 
                 )}
             </Drawer.Screen>
-
 
         </Drawer.Navigator>
     );

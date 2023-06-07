@@ -172,6 +172,23 @@ async function obtenerPostsBBDD(setIsLoading, setError, setPosts) {
     }
     setIsLoading(false);
 };
+async function obtenerGuardadosBBDD(setListaGuardados) {
+    const postsRef = collection(db, "guardados");
+    const user = await AsyncStorage.getItem('user');
+    const q = query(postsRef, where("user", "==", user));
+    const querySnapshot = await getDocs(q);
+
+    let guardadosBBDD = [];
+    try {
+        querySnapshot.forEach((doc) => {
+            guardadosBBDD.push(doc.data().post);
+        });
+        setListaGuardados(guardadosBBDD);
+    } catch (e) {
+        setError("Ha habido un error");
+        console.log("Error en obtenerGuardadosBBDD: " + e);
+    }
+};
 async function obtenerComentariosBBDD(setIsLoadingComentarios, setErrorComentarios, setComentarios, idPost) {
 
     const comentariosRef = collection(db, "comentarios");
@@ -258,6 +275,8 @@ async function comprobarPostGuardado(postid, setGuardado) {
 };
 
 function Home(props) {
+    const [esPaginaGuardados, setEsPaginaGuardados] = useState(props.esPaginaGuardados);
+
     const [posts, setPosts] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(true);
@@ -272,10 +291,29 @@ function Home(props) {
     const [comentario, setComentario] = useState('');
 
     const [guardado, setGuardado] = useState(false);
+    const [listaGuardados, setListaGuardados] = useState('');
 
     useEffect(() => {
-        obtenerPostsBBDD(setIsLoading, setError, setPosts);
+        setEsPaginaGuardados(props.esPaginaGuardados);
+    }, [props]);
+
+    useEffect(() => {
+        obtenerPostsBBDD(setIsLoading, setError, setPosts).then(() => {
+            obtenerGuardadosBBDD(setListaGuardados);
+            if (esPaginaGuardados) {
+                filtrarPostsGuardados();
+            };
+        });
     }, []);
+
+    useEffect(() => {
+        obtenerPostsBBDD(setIsLoading, setError, setPosts).then(() => {
+            obtenerGuardadosBBDD(setListaGuardados);
+            if (esPaginaGuardados) {
+                filtrarPostsGuardados();
+            };
+        });
+    }, [guardado, esPaginaGuardados]);
 
     useEffect(() => {
         setGuardado(false);
@@ -293,10 +331,32 @@ function Home(props) {
         });
     };
     const guardarPost = (idPost) => {
-        guardarPostBBDD(idPost, setGuardado);
+        guardarPostBBDD(idPost, setGuardado).then(() => {
+            obtenerGuardadosBBDD(setListaGuardados);
+            if (esPaginaGuardados) {
+                filtrarPostsGuardados();
+            };
+        });
     };
     const eliminarPost = (idPost) => {
-        eliminarPostBBDD(idPost, setGuardado);
+        eliminarPostBBDD(idPost, setGuardado).then(() => {
+            obtenerGuardadosBBDD(setListaGuardados);
+            if (esPaginaGuardados) {
+                filtrarPostsGuardados();
+            };
+        });
+    };
+    const filtrarPostsGuardados = () => {
+        obtenerPostsBBDD(setIsLoading, setError, setPosts).then(() => {
+            if (listaGuardados && posts && esPaginaGuardados) {
+                let listaFiltrada = posts.filter(post => listaGuardados.includes(post.id));
+                console.log(listaGuardados);
+                listaFiltrada.forEach(objeto => {
+                    console.log(objeto.id);
+                });
+                setPosts(posts.filter(post => listaGuardados.includes(post.id)));
+            }
+        });
     };
 
     const styles = StyleSheet.create({

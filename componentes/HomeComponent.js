@@ -5,9 +5,11 @@ import { StyleSheet, Dimensions } from 'react-native';
 import { IndicadorActividad } from './IndicadorActividadComponent';
 
 import { db } from '../config/firebase.js';
-import { collection, getDocs, orderBy, limit, query, where } from "firebase/firestore";
+import { collection, getDocs, orderBy, limit, query, where, addDoc } from "firebase/firestore";
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Icon } from '@rneui/themed';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -95,7 +97,7 @@ function RenderComentarios(props) {
             userContainer: {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                marginBottom: 10,
+                marginBottom: 2,
             },
             user: {
                 fontSize: 12,
@@ -106,21 +108,26 @@ function RenderComentarios(props) {
                 color: '#888',
             },
             description: {
-                marginBottom: 10,
+                marginBottom: 5,
             },
+            container: {
+                width: windowWidth * 0.95,
+            }
         });
 
         if (comentarios != null && comentarios.length > 0) {
             return comentarios.map((comentario, index) => (
+                <View style={styles.container}>
+                    <Card key={index} >
+                        <Text style={styles.description}>{comentario.comentario}</Text>
+                        <Card.Divider />
+                        <View style={styles.userContainer}>
+                            <Text style={styles.user}>{comentario.user}</Text>
+                        </View>
+                        <Text style={styles.date}>{comentario.fecha}</Text>
+                    </Card>
+                </View>
 
-                <Card>
-                    <Text style={styles.description}>{comentario.comentario}</Text>
-                    <Card.Divider />
-                    <View style={styles.userContainer}>
-                        <Text style={styles.user}>{comentario.user}</Text>
-                    </View>
-                    <Text style={styles.date}>{comentario.fecha}</Text>
-                </Card>
 
             ))
         }
@@ -199,6 +206,16 @@ async function obtenerComentariosBBDD(setIsLoadingComentarios, setErrorComentari
     setIsLoadingComentarios(false);
 };
 
+async function subirComentarioBBDD(comentario, postid) {
+    const user = await AsyncStorage.getItem('user');
+    const docRef = await addDoc(collection(db, "comentarios"), {
+        user: user,
+        fecha: new Date(),
+        comentario: comentario,
+        post: postid
+    });
+};
+
 function Home(props) {
     const [posts, setPosts] = useState('');
     const [error, setError] = useState('');
@@ -224,10 +241,11 @@ function Home(props) {
     }, [mostrarPost]);
 
     const handleAgregarComentario = () => {
-
-        console.log(comentario);
-        setModalVisible(false);
-        setComentario('');
+        subirComentarioBBDD(comentario, mostrarPost.id).then(() => {
+            setModalVisible(false);
+            setComentario('');
+            obtenerComentariosBBDD(setIsLoadingComentarios, setErrorComentarios, setComentarios, mostrarPost.id);
+        });
     };
 
     const styles = StyleSheet.create({
@@ -282,7 +300,7 @@ function Home(props) {
             borderColor: '#ccc',
         },
         modalTitulo: {
-            fontSize: 20,
+            fontSize: 17,
             fontWeight: 'bold',
             marginBottom: 20,
         },
@@ -315,7 +333,7 @@ function Home(props) {
         },
         botonText: {
             color: 'black',
-            fontSize: 16,
+            fontSize: 13,
             fontWeight: 'bold',
             textAlign: 'center',
         }
@@ -358,7 +376,7 @@ function Home(props) {
                         onRequestClose={() => setModalVisible(false)}
                     >
                         <View style={styles.modalContainer}>
-                            <Text style={styles.modalTitulo}>Añadir Comentario</Text>
+                            <Text style={styles.modalTitulo}>Añadir comentario</Text>
                             <TextInput
                                 style={styles.comentarioInput}
                                 value={comentario}

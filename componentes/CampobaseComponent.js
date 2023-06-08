@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import Constants from 'expo-constants';
 import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './HomeComponent';
+import Guardados from './GuardadosComponent';
 import { View, StyleSheet, Image, Text, TouchableOpacity, Linking } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Icon } from '@rneui/themed';
@@ -24,6 +25,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
     fetchExcursiones: () => dispatch(fetchExcursiones()),
 })
+
+
 
 async function requestEmailPermission() {
     const { status } = await Permissions.askAsync(Permissions.CONTACTS);
@@ -64,12 +67,13 @@ function HomeNavegador({ navigation }) {
                     title: 'Inicio',
                 }}
             >
-                {(props) => <Home {...props} esPaginaGuardados={false} />}
+                {(props) => <Home {...props} />}
             </Stack.Screen>
         </Stack.Navigator>
     );
 }
 function GuardadosNavegador({ navigation }) {
+    const [haEntradoInicio, setHaEntradoInicio] = useState(true);
     return (
         <Stack.Navigator initialRouteName="Guardados" screenOptions={{
             headerMode: 'screen',
@@ -82,8 +86,9 @@ function GuardadosNavegador({ navigation }) {
                 options={{
                     title: 'Guardados',
                 }}
+                onPress={() => setHaEntradoInicio(true)}
             >
-                {(props) => <Home {...props} esPaginaGuardados={true} />}
+                {(props) => <Guardados {...props} haEntradoInicio={haEntradoInicio} setHaEntradoInicio={setHaEntradoInicio} />}
             </Stack.Screen>
         </Stack.Navigator>
     );

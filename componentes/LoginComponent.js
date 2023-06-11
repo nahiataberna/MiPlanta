@@ -14,7 +14,9 @@ import { auth } from "../config/firebase";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const PantallaLogin = () => {
+const PantallaLogin = ({ estaLogin, updateLoginStatus }) => {
+
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
@@ -46,9 +48,14 @@ const PantallaLogin = () => {
                 await AsyncStorage.setItem('pass', password);
 
                 const emailasync = await AsyncStorage.getItem('user');
-                console.log("Esta funcionando");
+                if(email===emailasync){
+                    console.log("Esta funcionando");
+                    updateLoginStatus(true);
+                }
+                
                 console.log(emailasync);
                 console.log(auth);
+
             }
 
         } catch (error) {

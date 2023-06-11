@@ -16,7 +16,14 @@ const store = ConfigureStore();
 
 export default function App() {
 
-  const estaLogin = true;
+  //const estaLogin = false;
+
+  const [estaLogin, setEstaLogin] = useState(false);
+
+  // Function to update the estaLogin value
+  const updateLoginStatus = (isLoggedIn) => {
+    setEstaLogin(isLoggedIn);
+  };
   const [mostrarAnadirPost, setMostrarAnadirPost] = useState(false);
   return (
     <Provider store={store}>
@@ -37,7 +44,7 @@ export default function App() {
             </View>
             :
             <View style={styles.container}>
-              <PantallaLogin />
+              <PantallaLogin estaLogin={estaLogin} updateLoginStatus={updateLoginStatus} />
             </View>
 
         }

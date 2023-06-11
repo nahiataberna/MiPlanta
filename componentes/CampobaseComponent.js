@@ -110,7 +110,7 @@ function MiosNavegador({ navigation }) {
                 }}
                 onPress={() => setHaEntradoInicio(true)}
             >
-                {(props) => <Guardados {...props} haEntradoInicio={haEntradoInicio} setHaEntradoInicio={setHaEntradoInicio} />}
+                {(props) => <Mios {...props} haEntradoInicio={haEntradoInicio} setHaEntradoInicio={setHaEntradoInicio} />}
             </Stack.Screen>
         </Stack.Navigator>
     );

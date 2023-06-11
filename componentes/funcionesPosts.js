@@ -171,6 +171,40 @@ export async function obtenerPostsBBDD(setIsLoading, setError, setPosts) {
     setIsLoading(false);
 };
 
+export async function obtenerPostsMiosBBDD(setIsLoading, setError, setPosts) {
+    const postsRef = collection(db, "posts");
+    const user = await AsyncStorage.getItem('user');
+    const q = query(postsRef, where("user", "==", user), orderBy("fecha", "desc"));
+    const querySnapshot = await getDocs(q);
+
+    let postsBBDD = [];
+    try {
+        querySnapshot.forEach((doc) => {
+            const fecha = new Date(doc.data().fecha.seconds * 1000 + Math.floor(doc.data().fecha.nanoseconds / 1000000));
+            const dia = fecha.getDate();
+            const mes = fecha.toLocaleString('es-ES', { month: 'long' });
+            const anio = fecha.getFullYear();
+            const hora = fecha.getHours();
+            const minutos = fecha.getMinutes().toString().padStart(2, '0');
+            const fechaString = `${dia} de ${mes} de ${anio}, ${hora}:${minutos}`;
+
+            postsBBDD.push({
+                user: doc.data().user,
+                fecha: fechaString,
+                titulo: doc.data().titulo,
+                descripcion: doc.data().descripcion,
+                img: doc.data().img,
+                id: doc.id,
+            });
+        });
+        setPosts(postsBBDD);
+    } catch (e) {
+        setError("Ha habido un error");
+        console.log("Error en obtenerPostsBBDD: " + e);
+    }
+    setIsLoading(false);
+};
+
 
 
 export async function obtenerComentariosBBDD(setIsLoadingComentarios, setErrorComentarios, setComentarios, idPost) {

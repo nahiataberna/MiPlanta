@@ -4,6 +4,7 @@ import { NavigationContainer, DrawerActions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './HomeComponent';
 import Guardados from './GuardadosComponent';
+import Mios from './MiosComponent';
 import { View, StyleSheet, Image, Text, TouchableOpacity, Linking } from 'react-native';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Icon } from '@rneui/themed';
@@ -93,13 +94,39 @@ function GuardadosNavegador({ navigation }) {
         </Stack.Navigator>
     );
 }
+function MiosNavegador({ navigation }) {
+    const [haEntradoInicio, setHaEntradoInicio] = useState(true);
+    return (
+        <Stack.Navigator initialRouteName="Míos" screenOptions={{
+            headerMode: 'screen',
+            headerTintColor: '#a4c7cc',
+            headerStyle: { backgroundColor: colorGaztaroaOscuro }, headerTitleStyle: { color: '#a4c7cc' },
+            headerLeft: () => (<Icon name="menu" size={28} color='#a4c7cc' onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())} />),
+        }} >
+            <Stack.Screen
+                name="Mío"
+                options={{
+                    title: 'Míos',
+                }}
+                onPress={() => setHaEntradoInicio(true)}
+            >
+                {(props) => <Guardados {...props} haEntradoInicio={haEntradoInicio} setHaEntradoInicio={setHaEntradoInicio} />}
+            </Stack.Screen>
+        </Stack.Navigator>
+    );
+}
 
 
-function DrawerNavegador() {
+function DrawerNavegador({props}) {
     async function handleSugerencia() {
         await requestEmailPermission();
         const uri = 'mailto:miplantanahiainigo@gmail.com?subject=Sugerencia%20MiPlanta';
         Linking.openURL(uri);
+    }
+
+    function handleLogout(){
+        console.log("Estoy en handle Logout");
+        props.updateLoginStatus(false);
     }
 
     return (
@@ -132,6 +159,16 @@ function DrawerNavegador() {
                     />
                 )
             }} />
+            <Drawer.Screen name="Míos" component={MiosNavegador} options={{
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='user'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }} />
             <Drawer.Screen name="Indicencia" options={{
                 drawerIcon: ({ tintColor }) => (
                     <Icon
@@ -150,6 +187,29 @@ function DrawerNavegador() {
                         <Text style={styles.textoIncidencia} > Si desea comunicarse con soporte para consultar una posible incidencia o enviar sugerencias, hágalo a través del correo electrónico.</Text>
                         <TouchableOpacity onPress={handleSugerencia} style={styles.button}>
                             <Text style={styles.buttonText}>Enviar correo electrónico</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                )}
+            </Drawer.Screen>
+            <Drawer.Screen name="Log out" options={{
+                drawerIcon: ({ tintColor }) => (
+                    <Icon
+                        name='arrow-right'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                ),
+                headerShown: true,
+                headerStyle: { backgroundColor: colorGaztaroaOscuro },
+                headerTitleStyle: { color: '#a4c7cc' }
+            }}>
+                {() => (
+                    <View>
+                        <Text style={styles.textoIncidencia} > Si desea finalizar sesión pulse el botón. ¡Vuelve pronto!</Text>
+                        <TouchableOpacity onPress={handleLogout} style={styles.button}>
+                            <Text style={styles.buttonText}>Log out</Text>
                         </TouchableOpacity>
                     </View>
 

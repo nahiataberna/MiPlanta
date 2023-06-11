@@ -49,12 +49,8 @@ const PantallaLogin = ({ estaLogin, updateLoginStatus }) => {
 
                 const emailasync = await AsyncStorage.getItem('user');
                 if(email===emailasync){
-                    console.log("Esta funcionando");
                     updateLoginStatus(true);
                 }
-                
-                console.log(emailasync);
-                console.log(auth);
 
             }
 

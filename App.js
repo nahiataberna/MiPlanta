@@ -35,7 +35,7 @@ export default function App() {
               {mostrarAnadirPost ?
                 <AnadirPost setMostrarAnadirPost={setMostrarAnadirPost} /> :
                 <View style={styles.container}>
-                  <Campobase />
+                  <Campobase estaLogin={estaLogin} updateLoginStatus={updateLoginStatus}/>
                   <StatusBar style="auto" />
                   < BotonAnadirPost onPress={() => setMostrarAnadirPost(true)}  />
                 </View>

@@ -3,7 +3,6 @@ import { Text, ScrollView, View, Modal, TextInput } from 'react-native';
 import { Card, Image } from '@rneui/themed';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Icon } from '@rneui/themed';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     RenderPost,
     RenderComentarios,
@@ -13,7 +12,8 @@ import {
     guardarPostBBDD,
     eliminarPostGuardadoBBDD,
     comprobarPostGuardado,
-    stylesHomeGuardados
+    stylesHomeGuardados,
+    eliminarPostBBDDFirebase
 } from './funcionesPosts';
 
 
@@ -37,7 +37,6 @@ function Mios(props) {
         obtenerPostsMiosBBDD(setIsLoading, setError, setPosts);
     }, []);
 
-
     useEffect(() => {
         setGuardado(false);
         if (mostrarPost != '') {
@@ -57,8 +56,11 @@ function Mios(props) {
         guardarPostBBDD(idPost, setGuardado);
     };
     const eliminarPost = (idPost) => {
-        eliminarPostGuardadoBBDD(idPost, setGuardado);
+        eliminarPostGuardadoBBDD(idPost);
     };
+    const eliminarPostBBDD = (idPost) => {
+        eliminarPostBBDDFirebase(idPost);
+    }
 
 
     return (
@@ -84,6 +86,13 @@ function Mios(props) {
                             <TouchableOpacity onPress={() => setModalVisible(true)}>
                                 <Icon
                                     name="comment"
+                                    type="font-awesome"
+                                    size={24}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => eliminarPostBBDD(mostrarPost.id)}>
+                                <Icon
+                                    name="trash"
                                     type="font-awesome"
                                     size={24}
                                 />

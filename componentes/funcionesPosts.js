@@ -280,6 +280,14 @@ export async function eliminarPostGuardadoBBDD(postid, setGuardado) {
     }
 };
 
+export async function eliminarPostBBDDFirebase(postid) {
+    try {
+        deleteDoc(doc(db, "posts", postid));
+    } catch (e) {
+        console.log("Error en eliminarPostBBDDFirebase: " + e);
+    }
+};
+
 export async function comprobarPostGuardado(postid, setGuardado) {
     const user = await AsyncStorage.getItem('user');
     const guardadosRef = collection(db, "guardados");

@@ -117,7 +117,7 @@ function MiosNavegador({ navigation }) {
 }
 
 
-function DrawerNavegador({props}) {
+function DrawerNavegador(props) {
     async function handleSugerencia() {
         await requestEmailPermission();
         const uri = 'mailto:miplantanahiainigo@gmail.com?subject=Sugerencia%20MiPlanta';
@@ -225,12 +225,13 @@ class Campobase extends Component {
     componentDidMount() {
         this.props.fetchExcursiones();
     }
+    
 
     render() {
         return (
             <NavigationContainer>
                 <View style={{ flex: 1, paddingTop: Platform.OS === 'ios' ? 0 : Constants.statusBarHeight }}>
-                    <DrawerNavegador />
+                    <DrawerNavegador estaLogin={this.props.estaLogin} updateLoginStatus={this.props.updateLoginStatus}/>
                 </View>
             </NavigationContainer>
         );

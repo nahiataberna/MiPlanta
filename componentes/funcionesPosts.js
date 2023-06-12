@@ -283,6 +283,21 @@ export async function eliminarPostGuardadoBBDD(postid, setGuardado) {
 export async function eliminarPostBBDDFirebase(postid) {
     try {
         deleteDoc(doc(db, "posts", postid));
+        const guardadosRef = collection(db, "guardados");
+        const q = query(guardadosRef, where("post", '==', postid));
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((guardado) => {
+            deleteDoc(doc(db, "guardados", guardado.id));
+        });
+        
+        const comentariosRef = collection(db, "comentarios");
+        const l = query(comentariosRef, where("post", '==', postid));
+        const querySnapshot1 = await getDocs(l);
+        querySnapshot1.forEach((comentario) => {
+            deleteDoc(doc(db, "comentarios", comentario.id));
+        });
+        
+
     } catch (e) {
         console.log("Error en eliminarPostBBDDFirebase: " + e);
     }
